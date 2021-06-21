@@ -35,5 +35,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float RotationRate = 60;
+
+	
 };
 
