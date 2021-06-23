@@ -13,5 +13,17 @@ UCLASS()
 class SIMPLESHOOTER_API AShooterAIController : public AAIController
 {
 	GENERATED_BODY()
+
+	public:
+	virtual void Tick(float DeltaSeconds) override;
+	
+	private:
+	APawn* PlayerPawn = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	float AcceptanceRadius = 400;
+
+	protected:
+	virtual void BeginPlay() override;
 	
 };
