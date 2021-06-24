@@ -42,9 +42,14 @@ void AGun::PullTrigger()
 	// Calculate end of line trace
 	const FVector End = Location + Rotation.Vector() * MaxRange;
 
+	// Setup stuff to ignore
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(GetOwner());
+
 	// Line Trace
 	FHitResult Hit;
-	const bool bSuccess = GetWorld()->LineTraceSingleByChannel(OUT Hit, Location, End, ECC_GameTraceChannel1);
+	const bool bSuccess = GetWorld()->LineTraceSingleByChannel(OUT Hit, Location, End, ECC_GameTraceChannel1, Params);
 
 	// If something gets hit...
 	if(bSuccess)
