@@ -23,6 +23,11 @@ class SIMPLESHOOTER_API AShooterAIController : public AAIController
 	UPROPERTY(EditAnywhere)
 	float AcceptanceRadius = 400;
 
+	UPROPERTY(EditAnywhere)
+	class UBehaviorTree* AIBehaviorTree;
+
+	UBlackboardComponent* BlackboardComponent;
+	
 	protected:
 	virtual void BeginPlay() override;
 	
