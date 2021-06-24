@@ -5,8 +5,6 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "DrawDebugHelpers.h"
-#include "ToolContextInterfaces.h"
 
 #define OUT
 
@@ -24,15 +22,45 @@ AGun::AGun()
 
 }
 
+// Called when the game starts or when spawned
+void AGun::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void AGun::PullTrigger()
 {
 	// Play MuzzleFlash
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
 
-	// Setup For line trace
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	AController* OwnerController = OwnerPawn->GetController();
-	if(!OwnerPawn || !OwnerController) return;
+	FHitResult Hit;
+	FVector ShotDirection;
+	
+	// If something gets hit...
+	if(GunTrace(Hit, ShotDirection))
+	{
+		// Spawn Hit FX pointing back to the line trace start
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, Hit.Location, ShotDirection.Rotation());
+
+		AActor* ActorHit = Hit.GetActor();
+		if(ActorHit != nullptr)
+		{
+			AController* OwnerController = GetOwnerController();
+			if(!OwnerController) return;
+			
+			FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
+			ActorHit->TakeDamage(Damage, DamageEvent, OwnerController, this);
+		}
+	}
+
+
+	
+}
+
+bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
+{
+	AController* OwnerController = GetOwnerController();
+	if(!OwnerController) return false;
 
 	// Get Player Viewpoint (start of line trace)
 	FVector Location;
@@ -47,34 +75,19 @@ void AGun::PullTrigger()
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
 
-	// Line Trace
-	FHitResult Hit;
-	const bool bSuccess = GetWorld()->LineTraceSingleByChannel(OUT Hit, Location, End, ECC_GameTraceChannel1, Params);
-
-	// If something gets hit...
-	if(bSuccess)
-	{
-		// Spawn Hit FX pointing back to the line trace start
-		const FVector ShotDirection = -Rotation.Vector();
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, Hit.Location, ShotDirection.Rotation());
-
-		AActor* ActorHit = Hit.GetActor();
-		if(ActorHit != nullptr)
-		{
-			FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
-			ActorHit->TakeDamage(Damage, DamageEvent, OwnerController, this);
-		}
-	}
-
-
+	ShotDirection = -Rotation.Vector();
 	
+	// Line Trace
+	return GetWorld()->LineTraceSingleByChannel(OUT Hit, Location, End, ECC_GameTraceChannel1, Params);
 }
 
-// Called when the game starts or when spawned
-void AGun::BeginPlay()
+AController* AGun::GetOwnerController() const
 {
-	Super::BeginPlay();
+	// Setup For line trace
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if(!OwnerPawn) return nullptr;
 	
+	return OwnerPawn->GetController();
 }
 
 // Called every frame
