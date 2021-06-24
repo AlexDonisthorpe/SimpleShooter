@@ -14,8 +14,9 @@ class SIMPLESHOOTER_API AShooterAIController : public AAIController
 {
 	GENERATED_BODY()
 
-	// public:
-	// virtual void Tick(float DeltaSeconds) override;
+	public:
+	virtual void Tick(float DeltaSeconds) override;
+	bool IsDead() const;
 	
 	private:
 	APawn* PlayerPawn = nullptr;

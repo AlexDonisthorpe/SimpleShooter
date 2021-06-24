@@ -20,6 +20,8 @@ class SIMPLESHOOTER_API AShooterPlayerController : public APlayerController
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UUserWidget> LoseScreenClass;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UUserWidget> WinScreenClass;
 
 	FTimerHandle RestartTimer;
 		

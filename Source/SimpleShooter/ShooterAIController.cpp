@@ -1,9 +1,25 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ShooterAIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Characters/ShooterCharacter.h"
+
+void AShooterAIController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+}
+
+bool AShooterAIController::IsDead() const
+{
+	AShooterCharacter* ControlledCharacter = Cast<AShooterCharacter>(GetPawn());
+
+	if(ControlledCharacter != nullptr)
+	{
+		return ControlledCharacter->IsDead();
+	}
+	return true;
+}
 
 void AShooterAIController::BeginPlay()
 {
@@ -20,23 +36,3 @@ void AShooterAIController::BeginPlay()
 		BlackboardComponent->SetValueAsVector(TEXT("StartLocation"), GetPawn()->GetActorLocation());
 	}
 }
-
-/*void AShooterAIController::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-	
-	if(PlayerPawn)
-	{
-		if(LineOfSightTo(PlayerPawn))
-		{
-			FVector PlayerLocation = PlayerPawn->GetActorLocation();
-			
-			BlackboardComponent->SetValueAsVector(TEXT("PlayerLocation"), PlayerLocation);
-			BlackboardComponent->SetValueAsVector(TEXT("LastKnownPlayerLocation"), PlayerLocation);
-		}
-		else
-		{
-			BlackboardComponent->ClearValue(TEXT("PlayerLocation"));
-		}
-	}
-}*/
