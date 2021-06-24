@@ -21,7 +21,7 @@ void AShooterAIController::BeginPlay()
 	}
 }
 
-void AShooterAIController::Tick(float DeltaSeconds)
+/*void AShooterAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
@@ -39,4 +39,4 @@ void AShooterAIController::Tick(float DeltaSeconds)
 			BlackboardComponent->ClearValue(TEXT("PlayerLocation"));
 		}
 	}
-}
+}*/

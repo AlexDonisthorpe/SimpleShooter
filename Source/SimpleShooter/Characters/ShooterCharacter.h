@@ -18,7 +18,6 @@ private:
 	void MoveRight(float AxisValue);
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
-	void Shoot();
 
 	UPROPERTY(EditAnywhere, Category="Control")
 	float RotationRate = 60;
@@ -43,8 +42,8 @@ protected:
 public:
 	// Sets default values for this character's properties
 	AShooterCharacter();
-	
-	// Called every frame
+
+		// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
@@ -54,6 +53,7 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
-	
+
+	void Shoot();
 };
 
