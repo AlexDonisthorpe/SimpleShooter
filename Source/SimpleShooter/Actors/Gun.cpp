@@ -33,6 +33,9 @@ void AGun::PullTrigger()
 	// Play MuzzleFlash
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
 
+	// Play SFX
+	UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
+
 	FHitResult Hit;
 	FVector ShotDirection;
 	
@@ -41,6 +44,9 @@ void AGun::PullTrigger()
 	{
 		// Spawn Hit FX pointing back to the line trace start
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, Hit.Location, ShotDirection.Rotation());
+
+		// Play SFX at location
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, Hit.Location, ShotDirection.Rotation());
 
 		AActor* ActorHit = Hit.GetActor();
 		if(ActorHit != nullptr)

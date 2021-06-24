@@ -9,21 +9,19 @@
 
 void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
 {
+	UE_LOG(LogTemp, Warning, TEXT("PawnIsKilled"));
 	Super::PawnKilled(PawnKilled);
 
 	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(PawnKilled->GetController());
 	if(PlayerController != nullptr)
 	{
-		PlayerController->GameHasEnded(nullptr, false);
+		EndGame(false);
 	}
 
-	for(AController* Controller : TActorRange<AController>(GetWorld()))
+	for(AShooterAIController* Controller : TActorRange<AShooterAIController>(GetWorld()))
 	{
-		AShooterAIController* ShooterAIController = Cast<AShooterAIController>(Controller);
-		if(ShooterAIController == nullptr) return;
-
 		// If any AI controller at all is still alive, we can return early
-		if(!ShooterAIController->IsDead())
+		if(!Controller->IsDead())
 		{
 			return;
 		}
@@ -32,19 +30,12 @@ void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
 	EndGame(true);
 }
 
-void AKillEmAllGameMode::EndGame(const bool IsPlayerWinner) const
+void AKillEmAllGameMode::EndGame(const bool bIsPlayerWinner) const
 {
-	for(AController* Controller : TActorRange<AController>(GetWorld()))
+	for (AController* Controller : TActorRange<AController>(GetWorld()))
 	{
-		const bool bIsPlayer = Controller->IsPlayerController();
-
-		if(bIsPlayer ^ IsPlayerWinner)
-		{
-			Controller->GameHasEnded(Controller->GetPawn(), false);
-		}
-		else
-		{
-			Controller->GameHasEnded(Controller->GetPawn(), true);
-		}
+		bool bIsWinner = Controller->IsPlayerController() == bIsPlayerWinner;
+		Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
 	}
+
 }
