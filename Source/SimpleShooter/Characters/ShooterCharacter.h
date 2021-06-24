@@ -18,6 +18,7 @@ private:
 	void MoveRight(float AxisValue);
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
+	void HandleDeath();
 
 	UPROPERTY(EditAnywhere, Category="Control")
 	float RotationRate = 60;

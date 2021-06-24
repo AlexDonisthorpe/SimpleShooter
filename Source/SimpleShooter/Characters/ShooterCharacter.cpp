@@ -4,6 +4,7 @@
 #include "ShooterCharacter.h"
 
 #include "Components/CapsuleComponent.h"
+#include "SimpleShooter/SimpleShooterGameModeBase.h"
 #include "SimpleShooter/Actors/Gun.h"
 
 // Sets default values
@@ -49,18 +50,32 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 }
 
 float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
+                                    AActor* DamageCauser)
 {
+	if(IsDead()) return 0.0f;
+	
 	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Health = FMath::Clamp(Health - DamageApplied, 0.0f, MaxHealth);
 	if(Health <= 0)
 	{
-		bIsDead = true;
-		DetachFromControllerPendingDestroy();
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		HandleDeath();
 	}
 	
 	return Health;
+}
+
+void AShooterCharacter::HandleDeath()
+{
+	bIsDead = true;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ASimpleShooterGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ASimpleShooterGameModeBase>();
+	if(GameMode)
+	{
+		GameMode->PawnKilled(this);
+	}
+
+	DetachFromControllerPendingDestroy();
+
 }
 
 bool AShooterCharacter::IsDead() const
