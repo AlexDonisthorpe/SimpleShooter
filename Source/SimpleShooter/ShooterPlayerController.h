@@ -26,6 +26,8 @@ class SIMPLESHOOTER_API AShooterPlayerController : public APlayerController
 	TSubclassOf<class UUserWidget> HUDClass;
 
 	FTimerHandle RestartTimer;
+
+	UPROPERTY()
 	UUserWidget* HUD = nullptr;
 		
 	public:
